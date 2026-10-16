@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Family | Mafia Party Game</title>
+  <meta name="description" content="A live game of Mafia. Host a table, share the code, and find the killer before the town falls.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- HOME -->
+  <section id="screen-home" class="screen active">
+    <header class="hero">
+      <p class="kicker">Est. 1931 &middot; Private Table</p>
+      <h1 class="title">The Family</h1>
+      <p class="tagline">Trust no one. Vote wisely. One of you is wearing a wire.</p>
+    </header>
+
+    <div class="card home-card">
+      <label class="field">
+        <span>Your name</span>
+        <input id="home-name" type="text" maxlength="16" autocomplete="nickname" placeholder="e.g. Don Vinnie">
+      </label>
+      <div class="home-actions">
+        <button id="btn-host" class="btn btn-gold btn-big">Host Game</button>
+        <button id="btn-join" class="btn btn-ghost btn-big">Join Game</button>
+      </div>
+      <div id="join-box" class="join-box" hidden>
+        <label class="field">
+          <span>Table code</span>
+          <input id="join-code" type="text" maxlength="4" autocomplete="off" placeholder="ABCD" class="code-input">
+        </label>
+        <button id="btn-join-confirm" class="btn btn-gold btn-block">Sit Down</button>
+      </div>
+      <p id="home-error" class="error" role="alert"></p>
+    </div>
+  </section>
+
+  <!-- HOST SETTINGS MODAL -->
+  <div id="modal-settings" class="modal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <h2 id="settings-title">Set the Table</h2>
+      <p class="muted">Choose your rules before you open the doors.</p>
+
+      <div class="setting">
+        <div>
+          <strong>Mafia</strong>
+          <span class="muted small">How many killers hide among you</span>
+        </div>
+        <div class="stepper">
+          <button type="button" data-step="mafia" data-dir="-1" aria-label="Fewer mafia">&minus;</button>
+          <output id="set-mafia">1</output>
+          <button type="button" data-step="mafia" data-dir="1" aria-label="More mafia">+</button>
+        </div>
+      </div>
+
+      <label class="setting toggle-row">
+        <div>
+          <strong>Medic</strong>
+          <span class="muted small">Saves one person each night (can save self once)</span>
+        </div>
+        <input id="set-medic" type="checkbox" checked>
+      </label>
+
+      <label class="setting toggle-row">
+        <div>
+          <strong>Detective</strong>
+          <span class="muted small">Checks one player each night for the Mafia</span>
+        </div>
+        <input id="set-detective" type="checkbox" checked>
+      </label>
+
+      <div class="setting">
+        <div>
+          <strong>Max players</strong>
+          <span class="muted small">4 to 15 seats</span>
+        </div>
+        <input id="set-max" type="number" min="4" max="15" value="8" class="num-input" aria-label="Max players">
+      </div>
+
+      <p id="settings-error" class="error" role="alert"></p>
+      <div class="modal-actions">
+        <button id="btn-settings-cancel" class="btn btn-ghost">Back</button>
+        <button id="btn-create" class="btn btn-gold">Create Game</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOBBY -->
+  <section id="screen-lobby" class="screen">
+    <header class="game-top">
+      <div class="code-badge">
+        <span class="small muted">Table code</span>
+        <strong id="lobby-code" class="code-big">----</strong>
+      </div>
+      <div class="top-right">
+        <span id="lobby-count" class="pill">0 / 8</span>
+      </div>
+    </header>
+
+    <main class="lobby-main">
+      <h2 class="section-title">Waiting for guests</h2>
+      <p class="muted">Share the code. Each guest enters it on their phone under Join Game.</p>
+      <ul id="lobby-players" class="seat-grid" aria-live="polite"></ul>
+      <p id="lobby-rules" class="rules-line muted small"></p>
+    </main>
+
+    <footer class="bottom-bar">
+      <p id="lobby-hint" class="muted small"></p>
+      <button id="btn-start" class="btn btn-gold btn-block" hidden>Start First Night</button>
+    </footer>
+  </section>
+
+  <!-- GAME -->
+  <section id="screen-game" class="screen">
+    <header class="game-top">
+      <div class="code-badge">
+        <span class="small muted">Table code</span>
+        <strong id="game-code" class="code-big">----</strong>
+      </div>
+      <div class="top-right">
+        <span id="game-phase" class="pill">Night 1</span>
+      </div>
+    </header>
+
+    <main class="game-main">
+      <div id="phase-banner" class="phase-banner" aria-live="assertive">
+        <h2 id="phase-title">Night falls</h2>
+        <p id="phase-sub" class="muted"></p>
+      </div>
+
+      <div id="role-card" class="card role-card" hidden>
+        <p class="small muted">Your role</p>
+        <h3 id="role-name">Villager</h3>
+        <p id="role-desc" class="muted small"></p>
+        <p id="role-status" class="small"></p>
+      </div>
+
+      <div id="action-panel" class="card action-panel" hidden>
+        <h3 id="action-title"></h3>
+        <p id="action-sub" class="muted small"></p>
+        <div id="action-targets" class="target-grid"></div>
+        <p id="action-done" class="done-note" hidden></p>
+      </div>
+
+      <div id="check-results" class="card check-results" hidden>
+        <h3>Your checks</h3>
+        <ul id="check-list"></ul>
+      </div>
+
+      <h3 class="section-title small-title">Around the table</h3>
+      <ul id="game-players" class="seat-grid" aria-live="polite"></ul>
+
+      <h3 class="section-title small-title">Town log</h3>
+      <ol id="log" class="log" aria-live="polite"></ol>
+    </main>
+
+    <footer class="bottom-bar">
+      <button id="btn-again" class="btn btn-gold btn-block" hidden>Play Again</button>
+    </footer>
+  </section>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
