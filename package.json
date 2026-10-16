@@ -1,0 +1,17 @@
+{
+  "name": "mafia",
+  "version": "1.0.0",
+  "description": "Live Mafia party game with lobbies and join codes.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
